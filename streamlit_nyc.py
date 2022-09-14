@@ -13,12 +13,9 @@ st.markdown("This application is a Streamlit dashboard that can be used "
             "to analyze motor vehicle collisions in NYC 🚗")
 
 # load data
-
-
 @st.cache(persist=True)
 def load_data(nrows):
-    data = pd.read_csv(DATA_URL, nrows=nrows, parse_dates=[
-                       ['CRASH_DATE', 'CRASH_TIME']])
+    data = pd.read_csv(DATA_URL, nrows=nrows, parse_dates=[['CRASH_DATE', 'CRASH_TIME']])
     data.dropna(subset=['LATITUDE', 'LONGITUDE'], inplace=True)
 
     def lowercase(x):
@@ -33,8 +30,7 @@ data = load_data(100000)
 
 # visualize data on map
 st.header("Most people injured in NYC?")
-injured_people = st.slider(
-    "Number of persons injured in vehicle collisions", 0, 19)  # max num of injured people who are a total of 19 at the spot
+injured_people = st.slider("Number of persons injured in vehicle collisions", 0, 19)  # max num of injured people who are a total of 19 at the spot
 st.map(data.query("injured_persons >= @injured_people")
        [["latitude", "longitude"]].dropna(how="any"))
 
@@ -45,8 +41,7 @@ original_data = data
 data = data[data['date/time'].dt.hour == hour]
 
 # visualize data using charts and histograms
-st.subheader("Breakdown by minute between %i:00 and %i:00" %
-             (hour, (hour + 1) % 24))
+st.subheader("Breakdown by minute between %i:00 and %i:00" %(hour, (hour + 1) % 24))
 filtered = data[(data['date/time'].dt.hour >= hour) &
                 (data['date/time'].dt.hour < (hour + 1))]
 hist = np.histogram(filtered['date/time'].dt.minute, bins=60, range=(0, 60))[0]
@@ -56,8 +51,7 @@ fig = px.bar(chart_data, x='minute', y='crashes',
 st.write(fig)
 
 st.header("Top 10 dangerous streets by affected class")
-select = st.selectbox(
-    'Affected class', ['Pedestrians', 'Cyclists', 'Motorists'])
+select = st.selectbox('Affected class', ['Pedestrians', 'Cyclists', 'Motorists'])
 
 if select == 'Pedestrians':
     st.write(original_data.query("injured_pedestrians >= 1")[["on_street_name", "injured_pedestrians"]].sort_values(
